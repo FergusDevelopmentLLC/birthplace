@@ -11,3 +11,8 @@ https://stackoverflow.com/questions/753052/strip-html-from-strings-in-python
 https://stackoverflow.com/questions/3368969/find-string-between-two-substrings
 https://stackoverflow.com/questions/2612548/extracting-an-attribute-value-with-beautifulsoup
 https://hackersandslackers.com/scraping-urls-with-beautifulsoup/
+
+https://www.geodose.com/2018/03/how-to-add-google-maps-layer-QGIS-3.html
+https://gis.stackexchange.com/questions/54684/how-to-zoom-to-specific-lat-long-point-in-qgis
+https://stackoverflow.com/questions/13686001/python-module-for-getting-latitude-and-longitude-from-the-name-of-a-us-city
+https://stackoverflow.com/questions/59309953/how-to-check-if-the-field-contains-any-alphabetic-letters-in-postgresql

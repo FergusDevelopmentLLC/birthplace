@@ -1,103 +1,41 @@
-CREATE TABLE IF NOT EXISTS public.famous_raw
-(
-    en_curid character varying(256),
-    lang character varying(256),
-    name character varying(256),
-    numlangs character varying(256),
-    countryCode3 character varying(256),
-    birthyear character varying(256),
-    birthcity character varying(256),
-    gender character varying(256),
-    occupation character varying(256),
-    industry character varying(256),
-    domain character varying(256),
-    yr2008_01 character varying(256),
-    yr2008_02 character varying(256),
-    yr2008_03 character varying(256),
-    yr2008_04 character varying(256),
-    yr2008_05 character varying(256),
-    yr2008_06 character varying(256),
-    yr2008_07 character varying(256),
-    yr2008_08 character varying(256),
-    yr2008_09 character varying(256),
-    yr2008_10 character varying(256),
-    yr2008_11 character varying(256),
-    yr2008_12 character varying(256),
-    yr2009_01 character varying(256),
-    yr2009_02 character varying(256),
-    yr2009_03 character varying(256),
-    yr2009_04 character varying(256),
-    yr2009_05 character varying(256),
-    yr2009_06 character varying(256),
-    yr2009_07 character varying(256),
-    yr2009_08 character varying(256),
-    yr2009_09 character varying(256),
-    yr2009_10 character varying(256),
-    yr2009_11 character varying(256),
-    yr2009_12 character varying(256),
-    yr2010_01 character varying(256),
-    yr2010_02 character varying(256),
-    yr2010_03 character varying(256),
-    yr2010_04 character varying(256),
-    yr2010_05 character varying(256),
-    yr2010_06 character varying(256),
-    yr2010_07 character varying(256),
-    yr2010_08 character varying(256),
-    yr2010_09 character varying(256),
-    yr2010_10 character varying(256),
-    yr2010_11 character varying(256),
-    yr2010_12 character varying(256),
-    yr2011_01 character varying(256),
-    yr2011_02 character varying(256),
-    yr2011_03 character varying(256),
-    yr2011_04 character varying(256),
-    yr2011_05 character varying(256),
-    yr2011_06 character varying(256),
-    yr2011_07 character varying(256),
-    yr2011_08 character varying(256),
-    yr2011_09 character varying(256),
-    yr2011_10 character varying(256),
-    yr2011_11 character varying(256),
-    yr2011_12 character varying(256),
-    yr2012_01 character varying(256),
-    yr2012_02 character varying(256),
-    yr2012_03 character varying(256),
-    yr2012_04 character varying(256),
-    yr2012_05 character varying(256),
-    yr2012_06 character varying(256),
-    yr2012_07 character varying(256),
-    yr2012_08 character varying(256),
-    yr2012_09 character varying(256),
-    yr2012_10 character varying(256),
-    yr2012_11 character varying(256),
-    yr2012_12 character varying(256),
-    yr2013_01 character varying(256),
-    yr2013_02 character varying(256),
-    yr2013_03 character varying(256),
-    yr2013_04 character varying(256),
-    yr2013_05 character varying(256),
-    yr2013_06 character varying(256),
-    yr2013_07 character varying(256),
-    yr2013_08 character varying(256),
-    yr2013_09 character varying(256),
-    yr2013_10 character varying(256),
-    yr2013_11 character varying(256),
-    yr2013_12 character varying(256)
-)
+SELECT id, name, country_code, shape
+FROM public.countries
+limit 10;
 
-SELECT en_curid, lang, name, numlangs, countrycode3, birthyear, birthcity, gender, occupation, industry, domain, yr2008_01, yr2008_02, yr2008_03, yr2008_04, yr2008_05, yr2008_06, yr2008_07, yr2008_08, yr2008_09, yr2008_10, yr2008_11, yr2008_12, yr2009_01, yr2009_02, yr2009_03, yr2009_04, yr2009_05, yr2009_06, yr2009_07, yr2009_08, yr2009_09, yr2009_10, yr2009_11, yr2009_12, yr2010_01, yr2010_02, yr2010_03, yr2010_04, yr2010_05, yr2010_06, yr2010_07, yr2010_08, yr2010_09, yr2010_10, yr2010_11, yr2010_12, yr2011_01, yr2011_02, yr2011_03, yr2011_04, yr2011_05, yr2011_06, yr2011_07, yr2011_08, yr2011_09, yr2011_10, yr2011_11, yr2011_12, yr2012_01, yr2012_02, yr2012_03, yr2012_04, yr2012_05, yr2012_06, yr2012_07, yr2012_08, yr2012_09, yr2012_10, yr2012_11, yr2012_12, yr2013_01, yr2013_02, yr2013_03, yr2013_04, yr2013_05, yr2013_06, yr2013_07, yr2013_08, yr2013_09, yr2013_10, yr2013_11, yr2013_12
-	FROM public.famous_raw limit 10;
+CREATE INDEX countries_country_code_idx ON public.countries USING btree (country_code ASC NULLS LAST)
 
-create table famous as (
+
+drop table famous;
+select * from famous_raw where birthyear = '--1000'
+select * from famous_raw where birthyear = '-310/-305'
+select * from famous_raw where birthyear = '1237?'
+1237?
+
+select * from famous_raw where (birthyear ~* '[/]') is true
+
+select * from famous_raw where birthcity = 'Unknown'
+
+drop table famous;
+" music"
+
+create table famous_03 as (
 	with data as (
 		select distinct 
 			name,
-			lower(gender)::varchar(10) as gender,
+			lower(domain)::varchar(256) as domain,	
+			trim(lower(industry))::varchar(256) as industry,
 			lower(occupation)::varchar(256) as occupation,
-			lower(domain)::varchar(256) as domain,
-			birthcity as place_of_birth,
+			lower(gender)::varchar(10) as gender,	
+			birthyear::integer as birth_year,
+			birthcity as birth_place,
+			NULL::numeric as bp_lat,
+			NULL::numeric as bp_lon,
 			countrycode3::varchar(3) as country_code
 		from famous_raw
+		where name not in ('Aisha bint Abu Bakr', 'Alboin', 'Anne Boleyn', 'Pope Sixtus I', 'Terah', 'Callimachus', 'Adam de la Halle', 'Yun Chi-ho') -- have weird birthyear
+		and birthcity not in ('Unknown', '')
+		and gender in ('Male', 'Female')
+		and countrycode3 not in ('GIB', 'GLP', 'GUF', 'MTQ', 'PRT', 'PSE', 'SCG', 'SSD', 'TWN')
 		order by 1
 	)
 	select 
@@ -106,50 +44,291 @@ create table famous as (
 	from data
 )
 
-drop table famous
-select * from famous
+CREATE INDEX famous_country_code_idx ON public.famous USING btree (country_code ASC NULLS LAST)
 
-select * from countries limit 10
+select * from famous limit 100
 
-create table countries_04 as (
-	SELECT 
-		brk_name as name,
-		brk_a3 as country_code,
-		geom as shape
-	FROM public.countries
-	order by 1
-)
+select count(*) from famous
+--10526
 
-\COPY public.famous_raw FROM program 'cmd /c "type D:\temp\supply_hist_current_year_04.csv"' WITH (FORMAT text, delimiter '|', NULL "NULL")
+select * from famous where name = 'Mr. T'
+select * from famous where name = 'Woody Allen'
+select * from famous where name = 'Jeff Bridges'
 
-\COPY public.famous_raw FROM program '/home/ec2-user/programming/birthplace/sql/data/famous.tsv' WITH (FORMAT text, delimiter E'\t', NULL "NULL")
+select 
+	f.*,
+	c.name
+from famous f
+join countries c on c.country_code = f.country_code
+--10526
 
-CREATE INDEX countries_shape_idx ON countries USING GIST(shape);
+select 
+	f.*,
+	c.name
+from famous f
+left join countries c on c.country_code = f.country_code
+--10526
 
-create table countries_05 as (
-	SELECT 
-		id,	
-		name,
-		country_code,
-		shape
-	FROM public.countries_04
-	order by 1
-)
+select 
+	f.*,
+	c.name
+from famous f
+join countries c on c.country_code = f.country_code
 
-select * from countries_05
-drop table countries
-drop table countries_02
-drop table countries_03
-drop table countries_04
-
-ALTER TABLE countries_05 RENAME TO countries;
-CREATE INDEX countries_shape_idx ON countries USING GIST(shape);
-select * from countries
-
-select distinct occupation from famous
+select 
+	f.id,
+	f.name,
+	f.birth_place, 
+	c.name
+from famous f
+join countries c on c.country_code = f.country_code
 
 select 
 	*
+from famous
+where bp_lat is null
+order by id
+--10301
+
+2	"50 Cent"	"singer"	"arts"	1975	"male"	"Queens"	40.7135078	-73.8283132	"USA"
+68	"Abraham Lincoln"	"politician"	"institutions"	1809	"male"	"Hodgenville"	37.5737487	-85.740353	"USA"
+
+select 
+	f.id,
+	f.name,
+	f.occupation,
+	f.gender,
+	f.birth_year,
+	f.birth_place,
+	st_setsrid(st_makepoint(bp_lon, bp_lat), 4326) as shape
 from famous f
-join countries c on c.country_code = f.country_code
-where occupation = 'actor'
+where bp_lat is not null
+and birth_year = 1936
+
+and occupation = 'actor'
+
+select 
+	f.id,
+	f.name,
+	f.occupation,
+	f.gender,
+	f.birth_year,
+	f.birth_place,
+	st_setsrid(st_makepoint(bp_lon, bp_lat), 4326) as shape
+from famous f
+where bp_lat is not null
+and birth_place = 'Michigan City'
+
+select 
+	f.name,
+	f.occupation,
+	f.birth_year,
+	f.birth_place	
+from famous f
+where bp_lat is not null
+and birth_place = 'Hartford'
+
+select 
+	f.name,
+	f.occupation,
+	f.birth_year,
+	f.birth_place	
+from famous f
+where bp_lat is not null
+and birth_place = 'Dallas'
+
+select 
+	f.name,
+	f.occupation,
+	f.birth_year,
+	f.birth_place	
+from famous f
+where bp_lat is not null
+and occupation = 'pornographic actor'
+
+select 
+	f.name,
+	f.occupation,
+	f.birth_year,
+	f.birth_place	
+from famous f
+where bp_lat is not null
+and name = 'Mr. T'
+
+
+select * from famous_01 limit 100
+
+UPDATE famous_01
+SET famous_01.bp_lat = famous.bp_lat
+FROM famous
+WHERE famous_01.id = famous.id
+and famous_01.name = famous.name
+
+UPDATE famous_01
+SET bp_lat = famous.bp_lat
+FROM famous
+WHERE famous_01.name = famous.name
+
+UPDATE famous_01
+SET bp_lon = famous.bp_lon
+FROM famous
+WHERE famous_01.name = famous.name
+
+select * 
+from famous_01 
+order by name
+limit 100
+
+select * from famous_01
+
+alter table famous_01 add primary key (id);
+
+create table famous_02 as (
+	select * from famous_01 order by id
+)
+
+drop table famous
+drop table famous_01
+select * from famous_02
+
+alter table famous_02 rename to famous
+
+CREATE INDEX famous_country_code_idx ON public.famous USING btree (country_code ASC NULLS LAST)
+
+select * from famous
+
+alter table famous add primary key (id);
+
+select * from famous where domain = 'arts'
+
+select distinct domain from famous order by 1
+"arts"
+"business & law"
+"exploration"
+"humanities"
+"institutions"
+"public figure"
+"science & technology"
+"sports"
+
+select distinct industry from famous order by 1
+"activism"
+"business"
+"companions"
+"computer science"
+"dance"
+"design"
+"engineering"
+"explorers"
+"film and theatre"
+"fine arts"
+"government"
+"history"
+"individual sports"
+"invention"
+"language"
+"law"
+"math"
+"media personality"
+"medicine"
+"military"
+"music"
+"natural sciences"
+"outlaws"
+"philosophy"
+"religion"
+"social sciences"
+"team sports"
+
+select distinct occupation from famous order by 1
+"actor"
+"american football player"
+"anthropologist"
+"archaeologist"
+"architect"
+"artist"
+"astronaut"
+"astronomer"
+"athlete"
+"baseball player"
+"basketball player"
+"biologist"
+"boxer"
+"businessperson"
+"celebrity"
+"chef"
+"chemist"
+"chessmaster"
+"coach"
+"comedian"
+"comic artist"
+"companion"
+"composer"
+"computer scientist"
+"conductor"
+"cricketer"
+"critic"
+"cyclist"
+"dancer"
+"designer"
+"diplomat"
+"economist"
+"engineer"
+"explorer"
+"extremist"
+"fashion designer"
+"film director"
+"game designer"
+"geographer"
+"geologist"
+"golfer"
+"gymnast"
+"historian"
+"hockey player"
+"inventor"
+"journalist"
+"judge"
+"lawyer"
+"linguist"
+"mafioso"
+"magician"
+"martial arts"
+"mathematician"
+"military personnel"
+"model"
+"mountaineer"
+"musician"
+"nobleman"
+"painter"
+"philosopher"
+"photographer"
+"physician"
+"physicist"
+"pilot"
+"pirate"
+"political scientist"
+"politician"
+"pornographic actor"
+"presenter"
+"producer"
+"psychologist"
+"public worker"
+"racecar driver"
+"referee"
+"religious figure"
+"sculptor"
+"singer"
+"skater"
+"skier"
+"snooker"
+"soccer player"
+"social activist"
+"sociologist"
+"statistician"
+"swimmer"
+"tennis player"
+"wrestler"
+"writer"
+
+select * from famous where industry = 'companions'
+
