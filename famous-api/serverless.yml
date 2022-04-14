@@ -1,0 +1,31 @@
+org: willcarter
+app: famous-http-api
+service: famous-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  getCountries:
+    handler: handler.getCountries
+    events:
+      - http:
+          method: get
+          path: /getCountries
+  getFamousWhere:
+    handler: handler.getFamousWhere
+    events:
+      - http:
+          method: get
+          path: /getFamousWhere/{clause}
+
+plugins:
+  - serverless-offline
