@@ -1,3 +1,5 @@
 famous.tsv
 private.py
+private_notes.txt
 *.pyc
+db.js
