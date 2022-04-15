@@ -106,12 +106,15 @@ module.exports.getFamous = (event, context, callback) => {
     st_setsrid(st_makepoint(bp_lon, bp_lat), 4326) as shape
   FROM famous where 1=1 `.trim()
 
-  if(event.queryStringParameters['domain']) sql += ` and domain='${event.queryStringParameters['domain']}'`
-  if(event.queryStringParameters['industry']) sql += ` and industry='${event.queryStringParameters['industry']}'`
-  if(event.queryStringParameters['occupation']) sql += ` and occupation='${event.queryStringParameters['occupation']}'`
-  if(event.queryStringParameters['birth_year']) sql += ` and birth_year=${event.queryStringParameters['birth_year']}`
-  if(event.queryStringParameters['birth_place']) sql += ` and birth_place='${event.queryStringParameters['birth_place']}'`
-    
+  if(event.queryStringParameters) {
+    if(event.queryStringParameters['domain']) sql += ` and domain='${event.queryStringParameters['domain']}'`
+    if(event.queryStringParameters['industry']) sql += ` and industry='${event.queryStringParameters['industry']}'`
+    if(event.queryStringParameters['occupation']) sql += ` and occupation='${event.queryStringParameters['occupation']}'`
+    if(event.queryStringParameters['birth_year']) sql += ` and birth_year=${event.queryStringParameters['birth_year']}`
+    if(event.queryStringParameters['birth_place']) sql += ` and birth_place='${event.queryStringParameters['birth_place']}'`
+    if(event.queryStringParameters['name']) sql += ` and name='${event.queryStringParameters['name']}'`
+  }
+  
   sql = getGeoJsonSqlFor(sql)
 
   const client = new Client(dbConfig)
