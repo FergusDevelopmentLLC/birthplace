@@ -3,3 +3,4 @@ private.py
 private_notes.txt
 *.pyc
 db.js
+package-lock.json
