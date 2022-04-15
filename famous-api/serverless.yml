@@ -20,12 +20,12 @@ functions:
       - http:
           method: get
           path: /getCountries
-  getFamousWhere:
-    handler: handler.getFamousWhere
+  getFamous:
+    handler: handler.getFamous
     events:
       - http:
           method: get
-          path: /getFamousWhere/{clause}
+          path: /getFamous
 
 plugins:
   - serverless-offline

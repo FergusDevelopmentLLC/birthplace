@@ -88,7 +88,7 @@ module.exports.getCountries = (event, context, callback) => {
     })
 }
 
-module.exports.getFamousWhere = (event, context, callback) => {
+module.exports.getFamous = (event, context, callback) => {
 
   let sql = 
   `SELECT 
@@ -104,12 +104,14 @@ module.exports.getFamousWhere = (event, context, callback) => {
     bp_lon,
     country_code,
     st_setsrid(st_makepoint(bp_lon, bp_lat), 4326) as shape
-  FROM famous where {}`.trim()
+  FROM famous where 1=1 `.trim()
 
-  sql = sql.replace("{}", event.pathParameters.clause.replace('"','').replace('"',''));
-
-  console.log(sql)
-
+  if(event.queryStringParameters['domain']) sql += ` and domain='${event.queryStringParameters['domain']}'`
+  if(event.queryStringParameters['industry']) sql += ` and industry='${event.queryStringParameters['industry']}'`
+  if(event.queryStringParameters['occupation']) sql += ` and occupation='${event.queryStringParameters['occupation']}'`
+  if(event.queryStringParameters['birth_year']) sql += ` and birth_year=${event.queryStringParameters['birth_year']}`
+  if(event.queryStringParameters['birth_place']) sql += ` and birth_place='${event.queryStringParameters['birth_place']}'`
+    
   sql = getGeoJsonSqlFor(sql)
 
   const client = new Client(dbConfig)
