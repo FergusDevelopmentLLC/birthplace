@@ -149,3 +149,167 @@ module.exports.getFamous = (event, context, callback) => {
       client.end()
     })
 }
+
+module.exports.getDomains = (event, context, callback) => {
+  
+  let sql = `
+  SELECT to_json(r)
+  FROM (
+    select distinct 
+      domain,
+      replace(initcap(domain), 'And', 'and')::varchar(256) as label
+    from famous
+    order by 1  
+  ) r
+  `
+  
+  const client = new Client(dbConfig)
+  
+  client.connect()
+
+  client
+    .query(sql, null)
+    .then((res) => {
+
+      const response = {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": '*',
+          "Access-Control-Allow-Methods": 'GET'
+        },
+        body: JSON.stringify(res.rows.map(row => row['to_json']))
+      }
+
+      callback(null, response)
+
+      client.end()
+    })
+    .catch((error) => {
+
+      const errorResponse = {
+        statusCode: error.statusCode || 500,
+        body: `${error}`,
+      }
+
+      callback(null, errorResponse)
+
+      client.end()
+    })
+
+}
+
+module.exports.getIndustries = (event, context, callback) => {
+  
+  if(event.queryStringParameters && event.queryStringParameters['domain']) {
+
+    const domain = event.queryStringParameters['domain']
+
+    let sql = `
+    SELECT to_json(r)
+    FROM (
+      select distinct
+        industry,
+        replace(initcap(industry), 'And', 'and')::varchar(256) as label
+      from famous
+      where domain = '${domain}'
+      order by 1 
+    ) r
+    `
+    
+    const client = new Client(dbConfig)
+    
+    client.connect()
+
+    client
+      .query(sql, null)
+      .then((res) => {
+
+        const response = {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": '*',
+            "Access-Control-Allow-Methods": 'GET'
+          },
+          body: JSON.stringify(res.rows.map(row => row['to_json']))
+        }
+
+        callback(null, response)
+
+        client.end()
+      })
+      .catch((error) => {
+
+        const errorResponse = {
+          statusCode: error.statusCode || 500,
+          body: `${error}`,
+        }
+
+        callback(null, errorResponse)
+
+        client.end()
+      })
+    }
+  else {
+    callback(null, 'domain querystring value required.')
+  }
+
+}
+
+module.exports.getOccupations = (event, context, callback) => {
+  
+  if(event.queryStringParameters && event.queryStringParameters['domain'] && event.queryStringParameters['industry']) {
+
+    const domain = event.queryStringParameters['domain']
+    const industry = event.queryStringParameters['industry']
+
+    let sql = `
+    SELECT to_json(r)
+    FROM (
+      select distinct
+        occupation,
+        replace(initcap(occupation), 'And', 'and')::varchar(256) as label
+      from famous
+      where domain = '${domain}'
+      and industry = '${industry}'
+      order by 1
+    ) r
+    `
+    
+    const client = new Client(dbConfig)
+    
+    client.connect()
+
+    client
+      .query(sql, null)
+      .then((res) => {
+
+        const response = {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": '*',
+            "Access-Control-Allow-Methods": 'GET'
+          },
+          body: JSON.stringify(res.rows.map(row => row['to_json']))
+        }
+
+        callback(null, response)
+
+        client.end()
+      })
+      .catch((error) => {
+
+        const errorResponse = {
+          statusCode: error.statusCode || 500,
+          body: `${error}`,
+        }
+
+        callback(null, errorResponse)
+
+        client.end()
+      })
+    }
+  else {
+    callback(null, 'domain and industry querystring values required.')
+  }
+
+}
