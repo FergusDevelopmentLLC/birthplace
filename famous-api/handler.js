@@ -26,23 +26,6 @@ const getGeoJsonSqlFor = (sql) => {
           ) features;`
 }
 
-module.exports.hello = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Hooray! It works!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
-
 module.exports.getCountries = (event, context, callback) => {
 
   const client = new Client(dbConfig)
@@ -200,7 +183,7 @@ module.exports.getDomains = (event, context, callback) => {
 
 module.exports.getIndustries = (event, context, callback) => {
   
-  if(event.queryStringParameters && event.queryStringParameters['domain']) {
+  try {
 
     const domain = event.queryStringParameters['domain']
 
@@ -249,7 +232,7 @@ module.exports.getIndustries = (event, context, callback) => {
         client.end()
       })
     }
-  else {
+  catch {
     callback(null, 'domain querystring value required.')
   }
 
@@ -257,7 +240,7 @@ module.exports.getIndustries = (event, context, callback) => {
 
 module.exports.getOccupations = (event, context, callback) => {
   
-  if(event.queryStringParameters && event.queryStringParameters['domain'] && event.queryStringParameters['industry']) {
+  try {
 
     const domain = event.queryStringParameters['domain']
     const industry = event.queryStringParameters['industry']
@@ -308,7 +291,7 @@ module.exports.getOccupations = (event, context, callback) => {
         client.end()
       })
     }
-  else {
+  catch {
     callback(null, 'domain and industry querystring values required.')
   }
 

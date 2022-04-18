@@ -8,12 +8,6 @@ provider:
   runtime: nodejs14.x
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   getCountries:
     handler: handler.getCountries
     events:
