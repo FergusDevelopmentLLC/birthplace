@@ -85,14 +85,14 @@
         return occupations.sort()
       }
 
-      console.log('getDomains()', getDomains())
+      // console.log('getDomains()', getDomains())
 
-      console.log('getIndustriesFor(arts)', getIndustriesFor('arts'))
-      console.log('getIndustriesFor(business and law)', getIndustriesFor('business and law'))
-      console.log('getIndustriesFor(humanities)', getIndustriesFor('humanities'))
-      console.log('getIndustriesFor(public figure)', getIndustriesFor('public figure'))
+      // console.log('getIndustriesFor(arts)', getIndustriesFor('arts'))
+      // console.log('getIndustriesFor(business and law)', getIndustriesFor('business and law'))
+      // console.log('getIndustriesFor(humanities)', getIndustriesFor('humanities'))
+      // console.log('getIndustriesFor(public figure)', getIndustriesFor('public figure'))
       
-      console.log('getOccupationsFor(outlaws)', getOccupationsFor('outlaws'))
+      // console.log('getOccupationsFor(outlaws)', getOccupationsFor('outlaws'))
 
       const getDataSources = () => {
         return [
@@ -373,40 +373,40 @@
         const view = new SceneView(getSceneViewContent(map))
 
         const rotate = () => {
-          if (!view.interacting) {
-            const camera = view.camera.clone()
-            camera.position.longitude -= .05
-            view.goTo(camera, { animate: false })
-            requestAnimationFrame(rotate)
-          }
+          // if (!view.interacting) {
+          //   const camera = view.camera.clone()
+          //   camera.position.longitude -= .05
+          //   view.goTo(camera, { animate: false })
+          //   requestAnimationFrame(rotate)
+          // }
         }
 
         const swapBasemap = (target) => {
-          map.remove(tiledLayer)
-          currentBasemap = getBaseMaps()[target]
-          tiledLayerNew = new WebTileLayer({
-            urlTemplate: currentBasemap["url"]
-          })
-          map.add(tiledLayerNew)
+          // map.remove(tiledLayer)
+          // currentBasemap = getBaseMaps()[target]
+          // tiledLayerNew = new WebTileLayer({
+          //   urlTemplate: currentBasemap["url"]
+          // })
+          // map.add(tiledLayerNew)
         }
         
-        const getDataSourceLayer = (dataSourceUrl, columnToMap, title, opacity, dispBreaks) => {
+        // const getDataSourceLayer = (dataSourceUrl, columnToMap, title, opacity, dispBreaks) => {
           
-          const layer = new GeoJSONLayer({
-            opacity: opacity,
-            title: title,
-            url: dataSourceUrl,
-            outFields: [getColumnOfInterest()],
-            renderer: getRenderer(getLegendSubtitle(), dispBreaks, oranges),
-            popupTemplate: {
-              title: getPopupTitle(),
-              lastEditInfoEnabled: false,
-              content: getPopupTemplateContent()
-            }
-          });
+        //   const layer = new GeoJSONLayer({
+        //     opacity: opacity,
+        //     title: title,
+        //     url: dataSourceUrl,
+        //     outFields: [getColumnOfInterest()],
+        //     renderer: getRenderer(getLegendSubtitle(), dispBreaks, oranges),
+        //     popupTemplate: {
+        //       title: getPopupTitle(),
+        //       lastEditInfoEnabled: false,
+        //       content: getPopupTemplateContent()
+        //     }
+        //   });
 
-          return layer
-        }
+        //   return layer
+        // }
         
         const getLegend = (dataSourceLayer) => {
           const legend = new Legend({
@@ -560,10 +560,33 @@
           }
         }
 
+        const populateDomains = () => {
+
+          const sel = document.getElementById('select-domains')
+
+          sel.addEventListener('change', function() {
+            //swapBasemap(this.selectedIndex)
+            console.log('change')
+          })
+
+          for (const [i, domain] of getDomains().entries()) {
+
+            const opt = document.createElement('option')
+            opt.setAttribute('value', getDomains()[i]["name"])
+            opt.innerHTML = getDomains()[i]["label"]
+
+            if(i === 0) opt.setAttribute('selected', true)
+
+            sel.append(opt)
+          }
+        }
+
         populateSelectYear()
         populateSelectOpacities()
         populateSelectBasemaps()
         populateAnalysis()
+
+        populateDomains()
 
       })
 
@@ -581,15 +604,15 @@
         <hr/>
         <div class="qOption">
             <h3 id='h3-domain'>Domain</h3>
-            <select id="select-domain"></select>
+            <select id="select-domains"></select>
         </div>
         <div class="qOption">
             <h3 id='h3-industry'>Industry</h3>
-            <select id="select-industry"></select>
+            <select id="select-industries"></select>
         </div>
         <div class="qOption">
             <h3 id='h3-occupation'>Occupation</h3>
-            <select id="select-occupation"></select>
+            <select id="select-occupations"></select>
         </div>
         <div class="qOption">
             <h3 id='h3-birth_year'>Year of birth</h3>
