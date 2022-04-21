@@ -71,6 +71,71 @@ module.exports.getCountries = (event, context, callback) => {
     })
 }
 
+module.exports.getFamousLimit = (event, context, callback) => {
+  
+  try {
+
+    const id = event.queryStringParameters['id']
+    
+    let sql = `
+    SELECT to_json(r)
+    FROM (
+      select 
+        id,
+        name,
+        image,
+        domain,
+        industry,
+        occupation,
+        gender,
+        birth_year,
+        birth_place,
+        country_code
+      from famous
+      where id >= ${id}
+      order by id
+      limit 1000
+    ) r
+    `
+    
+    const client = new Client(dbConfig)
+    
+    client.connect()
+
+    client
+      .query(sql, null)
+      .then((res) => {
+
+        const response = {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": '*',
+            "Access-Control-Allow-Methods": 'GET'
+          },
+          body: JSON.stringify(res.rows.map(row => row['to_json']))
+        }
+
+        callback(null, response)
+
+        client.end()
+      })
+      .catch((error) => {
+
+        const errorResponse = {
+          statusCode: error.statusCode || 500,
+          body: `${error}`,
+        }
+
+        callback(null, errorResponse)
+
+        client.end()
+      })
+    }
+  catch {
+    callback(null, 'Error!!!')
+  }
+}
+
 module.exports.getFamous = (event, context, callback) => {
 
   let sql = 
