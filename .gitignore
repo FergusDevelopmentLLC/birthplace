@@ -5,5 +5,9 @@ private_notes.txt
 db.js
 package-lock.json
 mex_2016.js
+famous_*.js
 python/images/*
 display/images/*
+display/images/crop/*
+display/images/reject/*
+
