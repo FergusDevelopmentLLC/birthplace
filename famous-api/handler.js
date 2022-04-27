@@ -75,8 +75,6 @@ module.exports.getFamousLimit = (event, context, callback) => {
   
   try {
 
-    const id = event.queryStringParameters['id']
-    
     let sql = `
     SELECT to_json(r)
     FROM (
@@ -91,10 +89,9 @@ module.exports.getFamousLimit = (event, context, callback) => {
         birth_year,
         birth_place,
         country_code
-      from famous
-      where id >= ${id}
+      from famous_06
+      where image <> 'Unknown'
       order by id
-      limit 1000
     ) r
     `
     
