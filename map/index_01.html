@@ -1,0 +1,631 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    
+    <title>Famous</title>
+    
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.23/"></script>
+
+    <link rel="stylesheet" href="style/globe.css" />
+
+    <script src="data/mex_2016.js"></script>
+
+    <script src="data/occup.js"></script>
+
+    <script>
+      const mex_2016_url = URL.createObjectURL(new Blob([JSON.stringify(mex_2016)], { type: "application/json" }))
+    </script>
+
+    <script>
+
+      const graticuleOpacity = .4
+      let basisPart = 'metros'
+      let analysisPart = 'pcm'
+      let timespanIndex = 0
+      let stickMultiplier = 30000000
+      
+      const aquas = ['#ccebc5', '#a8ddb5', '#7bccc4', '#4eb3d3', '#2b8cbe']
+      const greens = ['#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c']
+      const oranges = ['#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801']
+      const purples = ['#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3']
+      const reds = ['#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d']
+      const grays = ['#d9d9d9', '#bdbdbd', '#969696', '#737373', '#525252']
+      const blues = ['#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5']
+
+      const colorScheme_pcm_vbs = blues
+      const colorScheme_pcm = oranges
+
+      const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()).replaceAll('And', 'and')
+      
+      const getDomains = () => {
+        let domains = []
+        for(occ of occupationsAll) if(!domains.includes(occ['domain'])) domains.push(occ['domain'])
+        domains = domains.sort()
+        returnArray = []
+        for (domain of domains) {
+          returnArray.push({
+            name: domain,
+            label: toTitleCase(domain)
+          })
+        }
+        return returnArray
+      }
+
+      const getIndustriesFor = (domain) => {
+        let industries = []
+        for(occ of occupationsAll) {
+          if(occ['domain'] === domain && !industries.includes(occ['industry'])) {
+            industries.push(occ['industry'])
+          }
+        }
+        industries = industries.sort()
+        returnArray = []
+        for (industry of industries) {
+          returnArray.push({
+            name: industry,
+            label: toTitleCase(industry)
+          })
+        }
+        return returnArray
+      }
+
+      const getOccupationsFor = (industry) => {
+        let occupations = []
+        for(occ of occupationsAll) {
+          if(occ['industry'] == industry && !occupations.includes(occ['occupation'])) {
+            const o = {
+              name: occ['occupation'],
+              label: toTitleCase(occ['occupation'])
+            }
+            occupations.push(o)
+          }
+        }
+        return occupations.sort()
+      }
+
+      // console.log('getDomains()', getDomains())
+
+      // console.log('getIndustriesFor(arts)', getIndustriesFor('arts'))
+      // console.log('getIndustriesFor(business and law)', getIndustriesFor('business and law'))
+      // console.log('getIndustriesFor(humanities)', getIndustriesFor('humanities'))
+      // console.log('getIndustriesFor(public figure)', getIndustriesFor('public figure'))
+      
+      // console.log('getOccupationsFor(outlaws)', getOccupationsFor('outlaws'))
+
+      const getDataSources = () => {
+        return [
+          {
+            name: '2016',
+            url: mex_2016_url
+          }
+        ]
+      }
+
+      const getDataSource = () => {
+        return getDataSources()[timespanIndex]["url"]
+      }
+
+      const getBaseMaps = () => {
+        return [
+          {
+            url: "http://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+            name: "Carto Voyager"
+          },
+          {
+            url: "http://a.basemaps.cartocdn.com/light_all/{level}/{col}/{row}.png",
+            name: "Carto Light"
+          },
+          {
+            url: "http://a.basemaps.cartocdn.com/dark_all/{level}/{col}/{row}.png",
+            name: "Carto Dark"
+          },
+          {
+            url: "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{level}/{row}/{col}",
+            name: "ESRI Light"
+          },
+          {
+            url: "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{level}/{row}/{col}",
+            name: "ESRI Dark"
+          },
+          {
+            url: "https://tile.openstreetmap.org/{level}/{col}/{row}.png",
+            name: "Open Street Map"
+          },
+          {
+            url: "https://mt1.google.com/vt/lyrs=r&x={col}&y={row}&z={level}",
+            name: "Google"
+          }
+        ]
+      }
+
+      const getOpacities = () => {
+        return [
+          {opacity: 1, label: "100%"},
+          {opacity: .9, label: "90%"},
+          {opacity: .8, label: "80%"},
+          {opacity: .7, label: "70%"},
+          {opacity: .6, label: "60%"},
+          {opacity: .5, label: "50%"},
+          {opacity: .4, label: "40%"},
+          {opacity: .3, label: "30%"},
+          {opacity: .2, label: "20%"},
+          {opacity: .15, label: "15%"},
+          {opacity: .1, label: "10%"},
+          {opacity: .05, label: "5%"},
+          {opacity: 0, label: "Hidden"}
+        ]
+      }
+
+      const getAnalysis = () => {
+        return [
+                {
+                  name: 'Mexico PCM',
+                  part: 'Mexico'
+                }
+              ]
+      }
+
+      const getDataSourceLayerOpacity = () => {
+        return dataSourceLayerOpacity
+      }
+
+      const getColumnOfInterest = () => {
+        return 'pct_coverage_pcm'
+      }
+      
+      const getLegendTitle = () => {
+        return "Mexico PCM percent coverage"
+      }
+
+      const getLegendSubtitle = () => {
+        return `${getDataSources()[timespanIndex]["name"]}`
+      }
+      
+      let currentBasemap = getBaseMaps()[0]
+
+      let dataSourceLayerOpacity = getOpacities()[0]["opacity"]
+
+      let stopValues = [0, 0.0096, 0.0279, 0.0551, 0.1009]
+      
+      // popup
+      const getPopupTitle = () => {
+        return "Cell information"
+      }
+
+      const getPopupFields = () => {
+        
+        const pcmFields = [
+          {
+            fieldName: "pcm_count",
+            label: "Pcm count"
+          },
+          {
+            fieldName: "pcm_cell_sqkm",
+            label: "Pcm sqkm"
+          },
+          {
+            fieldName: "cell_area_sqkm",
+            label: "Cell sqkm"
+          },
+          {
+            fieldName: "pct_coverage_pcm",
+            label: "Cell pct coverage"
+          },
+          {
+            fieldName: "quadkey",
+            label: "Cell quadkey"
+          }
+        ]
+        
+        return pcmFields
+
+      }
+      
+      const getPopupTemplateContent = () => {
+        return  [
+                  {
+                    type: "fields",
+                    fieldInfos: getPopupFields()
+                  }
+                ]
+      }
+
+      const getSceneViewContent = (map) => {
+        return {
+          map: map,
+          container: "viewDiv",
+          camera: {
+            position: {
+              spatialReference: {
+                latestWkid: 4326,
+                wkid: 4326
+              },
+              y: 25,
+              x: -110,
+              z: 25000000
+            },
+            heading: 0,
+            tilt: 0.1
+          },
+          environment: {
+            background: {
+              type: "color",
+              color: '#000000'
+            },
+            atmosphereEnabled: false,
+            lighting: {
+              directShadowsEnabled: false,
+              cameraTrackingEnabled: true,
+              ambientOcclusionEnabled: false
+            }
+          },
+          highlightOptions: {
+            color: "#ffee00",
+            fillOpacity: 0
+          }
+        }
+      }
+
+      const showState = () => {
+        console.log('analysisPart', analysisPart)
+        console.log('getDataSource()', getDataSource())
+      }
+
+      let displayedBreaks = []
+      for (const [i, brk] of stopValues.entries()) {
+        displayedBreaks.push(brk)
+      }
+
+    </script>
+
+    <script>
+      require(
+        [
+          "esri/Map",
+          "esri/layers/FeatureLayer",
+          "esri/layers/GeoJSONLayer",
+          "esri/views/SceneView",
+          "esri/renderers/SimpleRenderer",
+          "esri/symbols/PointSymbol3D",
+          "esri/symbols/ObjectSymbol3DLayer",
+          "esri/layers/WebTileLayer",
+          "esri/widgets/Legend"
+        ], (
+          Map,
+          FeatureLayer,
+          GeoJSONLayer,
+          SceneView,
+          SimpleRenderer,
+          PointSymbol3D,
+          ObjectSymbol3DLayer,
+          WebTileLayer,
+          Legend
+        ) => {
+        
+        const getSimpleRenderer = (colorRamp) => {
+
+          let stops = stopValues.map((stop, index)=> {
+            return {
+              value: +stop,
+              size: +(stop * stickMultiplier),
+              color: colorRamp[index]
+            }
+          })
+
+          return {
+            symbol: new PointSymbol3D({
+              symbolLayers: [new ObjectSymbol3DLayer({
+                resource: {
+                  primitive: "cube"
+                },
+                anchor: "bottom",
+                width: 38000
+              })]
+            }),
+            label: getLegendSubtitle(),
+            visualVariables: [{
+              type: "color",
+              field: getColumnOfInterest(),
+              legendOptions: {
+                title: getLegendSubtitle()
+              },
+              stops: stops,
+            }
+              , {
+              type: "size",
+              field: getColumnOfInterest(),
+              stops: stops,
+              axis: "height",
+              legendOptions: {
+                showLegend: false
+              }
+            }, {
+              type: "size",
+              axis: "width-and-depth",
+              useSymbolValue: true, // uses the width value defined in the symbol layer
+              legendOptions: {
+                showLegend: false
+              }
+            }]
+          }
+        }
+
+        const getRenderer = (legendSubTitle, breaks, colorRamp) => {
+          return new SimpleRenderer(getSimpleRenderer(colorRamp))
+        }
+
+        const graticule = new FeatureLayer({
+          url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/World_graticule_15deg/FeatureServer",
+          opacity: graticuleOpacity,
+          legendEnabled: false
+        })
+
+        const tiledLayer = new WebTileLayer({
+          urlTemplate: currentBasemap["url"]
+        })
+
+        const map = new Map({
+          layers: [graticule, tiledLayer]
+        })
+
+        const view = new SceneView(getSceneViewContent(map))
+
+        const rotate = () => {
+          // if (!view.interacting) {
+          //   const camera = view.camera.clone()
+          //   camera.position.longitude -= .05
+          //   view.goTo(camera, { animate: false })
+          //   requestAnimationFrame(rotate)
+          // }
+        }
+
+        const swapBasemap = (target) => {
+          // map.remove(tiledLayer)
+          // currentBasemap = getBaseMaps()[target]
+          // tiledLayerNew = new WebTileLayer({
+          //   urlTemplate: currentBasemap["url"]
+          // })
+          // map.add(tiledLayerNew)
+        }
+        
+        const getDataSourceLayer = (dataSourceUrl, columnToMap, title, opacity, dispBreaks) => {
+          
+          const layer = new GeoJSONLayer({
+            opacity: opacity,
+            title: title,
+            url: dataSourceUrl,
+            outFields: [getColumnOfInterest()],
+            renderer: getRenderer(getLegendSubtitle(), dispBreaks, oranges),
+            popupTemplate: {
+              title: getPopupTitle(),
+              lastEditInfoEnabled: false,
+              content: getPopupTemplateContent()
+            }
+          });
+
+          return layer
+        }
+        
+        const getLegend = (dataSourceLayer) => {
+          const legend = new Legend({
+            view: view,
+            layerInfos: [ { layer: dataSourceLayer } ]
+          })
+          return legend
+        }
+        
+        const refreshBasemapLegend = () => {
+          map.layers.removeAll()
+          
+          view.ui.empty("bottom-right")
+
+          const tiledLayer = new WebTileLayer({
+            urlTemplate: currentBasemap["url"]
+          })
+
+          map.layers.push(tiledLayer)
+        }
+
+        const setBreakVisibility = (breaks) => {
+
+          refreshBasemapLegend()
+          
+          let newDataSourceLayer = getDataSourceLayer(getDataSource(), getColumnOfInterest(), getLegendTitle(), getDataSourceLayerOpacity(), displayedBreaks)
+          map.layers.push(newDataSourceLayer)
+          
+          let newLegend = getLegend(newDataSourceLayer)
+          view.ui.add(newLegend, "bottom-right")
+
+        }
+
+        const swapLayers = () => {
+
+          refreshBasemapLegend()
+
+          map.layers.push(graticule)
+
+          let newDataSourceLayer = getDataSourceLayer(getDataSource(), getColumnOfInterest(), getLegendTitle(), getDataSourceLayerOpacity(), displayedBreaks)
+          
+          newDataSourceLayer.on("layer-view-create", function(evt){
+            console.info('evt.layerView', evt.layerView)
+          })
+
+          map.layers.push(newDataSourceLayer)
+          
+          let newLegend = getLegend(newDataSourceLayer)
+          view.ui.add(newLegend, "bottom-right")
+
+        }
+
+        let dataSourceLayer = getDataSourceLayer(getDataSource(), getColumnOfInterest(), getLegendTitle(), getDataSourceLayerOpacity(), displayedBreaks)
+        
+        map.layers.push(dataSourceLayer)
+
+        let legend = getLegend(dataSourceLayer)
+        view.ui.add(legend, "bottom-right")
+
+        rotate()
+
+        const populateSelectBasemaps = () => {
+
+          const sel = document.getElementById('select-basemaps')
+          
+          sel.addEventListener('change', function() {
+            swapBasemap(this.selectedIndex)
+          })
+
+          for (const [i, basemap] of getBaseMaps().entries()) {
+            
+            const opt = document.createElement('option')
+            opt.setAttribute('value', getBaseMaps()[i]["url"])
+            opt.innerHTML = getBaseMaps()[i]["name"]
+
+            if(i === 0) opt.setAttribute('selected', true)
+
+            sel.append(opt)
+          }
+        }
+
+        const populateAnalysis = () => {
+
+          const ul = document.getElementById('ul-analysis')
+          
+          for (const [i, a] of getAnalysis().entries()) {
+              
+            const li = document.createElement('li')
+
+            if(a["part"] === "pcm") li.setAttribute('id', 'li-pcm')
+            const input = document.createElement('input')
+            const label = document.createElement('label')
+            
+            input.setAttribute('type', 'radio')
+            input.setAttribute('id', `analysis${i}`)
+            input.setAttribute('name', 'analysis')
+            input.setAttribute('part', a['part'])
+            
+            if(i === 0) input.setAttribute('checked', 'checked')
+            
+            li.append(input)
+            
+            label.setAttribute('for', `analysis${i}`)
+            label.innerHTML = a["name"]
+            li.append(label)
+            
+            ul.append(li)
+          }
+
+        }
+
+        const populateSelectYear = () => {
+
+          const sel = document.getElementById('select-year')
+          
+          sel.addEventListener('change', function() {
+            timespanIndex = this.selectedIndex
+            swapLayers()
+          })
+
+          for (const [i, ds] of getDataSources().entries()) {
+            
+            const opt = document.createElement('option')
+            opt.setAttribute('value', getDataSources()[i]["url"])
+            opt.innerHTML = getDataSources()[i]["name"]
+
+            if(i === 0) opt.setAttribute('selected', true)
+
+            sel.append(opt)
+          }
+        }
+
+        const populateSelectOpacities = () => {
+
+          const sel = document.getElementById('select-opacity')
+          
+          sel.addEventListener('change', function() {
+            dataSourceLayerOpacity = getOpacities()[this.selectedIndex]["opacity"]
+            swapLayers()
+          })
+          
+          for (const [i, opacity] of getOpacities().entries()) {
+            
+            const opt = document.createElement('option')
+            opt.setAttribute('value', getOpacities()[i]["opacity"])
+            opt.innerHTML = getOpacities()[i]["label"]
+
+            if(i === 1) opt.setAttribute('selected', true)
+
+            sel.append(opt)
+          }
+        }
+
+        const populateDomains = () => {
+
+          const sel = document.getElementById('select-domains')
+
+          sel.addEventListener('change', function() {
+            //swapBasemap(this.selectedIndex)
+            console.log('change')
+          })
+
+          for (const [i, domain] of getDomains().entries()) {
+
+            const opt = document.createElement('option')
+            opt.setAttribute('value', getDomains()[i]["name"])
+            opt.innerHTML = getDomains()[i]["label"]
+
+            if(i === 0) opt.setAttribute('selected', true)
+
+            sel.append(opt)
+          }
+        }
+
+        populateSelectYear()
+        populateSelectOpacities()
+        populateSelectBasemaps()
+        populateAnalysis()
+
+        populateDomains()
+
+      })
+
+    </script>
+  </head>
+  <body>
+    <div id="toggle">
+      <form id="toggle-form">
+        <h3>Data layer</h3>
+        <ul id="ul-analysis"></ul>
+        <h3 id='h3-year'>Year</h3>
+        <select id="select-year"></select>
+        <h3>Opacity</h3>
+        <select id="select-opacity"></select>
+        <hr/>
+        <div class="qOption">
+            <h3 id='h3-domain'>Domain</h3>
+            <select id="select-domains"></select>
+        </div>
+        <div class="qOption">
+            <h3 id='h3-industry'>Industry</h3>
+            <select id="select-industries"></select>
+        </div>
+        <div class="qOption">
+            <h3 id='h3-occupation'>Occupation</h3>
+            <select id="select-occupations"></select>
+        </div>
+        <div class="qOption">
+            <h3 id='h3-birth_year'>Year of birth</h3>
+            <input id="select-birth_year" placeholder="1900"></input>
+        </div>
+        <div class="qOption">
+            <h3 id='h3-name'>Name</h3>
+            <input id="select-name" placeholder="Abraham Lincoln"></input>
+        </div>
+        <h3>Base map</h3>
+        <select id="select-basemaps"></select>
+      </form>
+    </div>
+    <div id="viewDiv"></div>
+  </body>
+</html>
