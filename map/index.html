@@ -5,11 +5,19 @@
     <title>Famous</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/css/main.css">
     <script src="https://js.arcgis.com/4.23/"></script>
+
+    
     <link rel="stylesheet" href="style/globe.css" />
+    <!-- <link rel="stylesheet" href="style/autocomplete.css" /> -->
+    <script>
+      // var countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
+    </script>
+    <!-- <script src="js/autocomplete.js"></script> -->
+    <script src="data/occup.js"></script>
   </head>
   <body>
     <div id="toggle">
-      <form id="toggle-form">
+      <form id="toggle-form" autocomplete="off">
         <div class="qOption">
             <h3 id='h3-domain'>Domain</h3>
             <select id="select-domain"></select>
@@ -28,7 +36,9 @@
         </div>
         <div class="qOption">
             <h3 id='h3-name'>Name</h3>
+            <div class="autocomplete" style="width:300px;">
             <input id="select-name" placeholder="Abraham Lincoln"></input>
+            </div>
         </div>
         <div class="qOption">
           <h3>Opacity</h3>
@@ -43,8 +53,6 @@
     <div id="viewDiv"></div>
   </body>
   
-  <script src="data/occup.js"></script>
-
   <script>
     const graticuleOpacity = .4
 
@@ -258,36 +266,6 @@
       }
     }
 
-    populateSelect('select-opacity', () => {
-      console.log('select-opacity')
-      //dataSourceLayerOpacity = getOpacities()[this.selectedIndex]["opacity"]
-      //swapLayers()
-    }, getOpacities)
-
-    const domainChangeFunc = () => {
-      document.getElementById("select-industry").innerHTML = ""
-      document.getElementById("select-occupation").innerHTML = ""
-      populateSelect('select-industry', industryChangeFunc, getIndustries)
-      populateSelect('select-occupation', occupationChangeFunc, getOccupations)
-      showState()
-    }
-
-    const industryChangeFunc = () => {
-      document.getElementById("select-occupation").innerHTML = ""
-      populateSelect('select-occupation', occupationChangeFunc, getOccupations)
-      showState()
-    }
-
-    const occupationChangeFunc = () => {
-      showState()
-    }
-
-    populateSelect('select-domain', domainChangeFunc, getDomains)
-
-    populateSelect('select-industry', industryChangeFunc, getIndustries)
-
-    populateSelect('select-occupation', occupationChangeFunc, getOccupations)
-
     const showState = () => {
       console.log('getCurrentDomain()', getCurrentDomain())
       console.log('getCurrentIndustry()', getCurrentIndustry())
@@ -390,13 +368,8 @@
         legendEnabled: false
       })
 
-      populateSelect('select-basemap', () => {
-        console.log('select-basemap')
-        //swapBasemap()
-      }, getBaseMaps)
-      
       const tiledLayer = new WebTileLayer({
-        urlTemplate: getCurrentBasemap()["value"]
+        urlTemplate: getBaseMaps()[0]["value"]
       })
       
       const map = new Map({
@@ -406,12 +379,12 @@
       const view = new SceneView(getSceneViewContent(map))
 
       const rotate = () => {
-        // if (!view.interacting) {
-        //   const camera = view.camera.clone()
-        //   camera.position.longitude -= .05
-        //   view.goTo(camera, { animate: false })
-        //   requestAnimationFrame(rotate)
-        // }
+        if (!view.interacting) {
+          const camera = view.camera.clone()
+          camera.position.longitude -= .05
+          view.goTo(camera, { animate: false })
+          requestAnimationFrame(rotate)
+        }
       }
 
       const swapBasemap = () => {
@@ -451,13 +424,8 @@
       
       const refreshBasemapLegend = () => {
         map.layers.removeAll()
-        
         view.ui.empty("bottom-right")
-
-        const tiledLayer = new WebTileLayer({
-          urlTemplate: currentBasemap["url"]
-        })
-
+        const tiledLayer = new WebTileLayer({ urlTemplate: getCurrentBasemap()['value'] })
         map.layers.push(tiledLayer)
       }
 
@@ -477,18 +445,18 @@
 
         refreshBasemapLegend()
 
-        map.layers.push(graticule)
+        // map.layers.push(graticule)
 
-        let newDataSourceLayer = getDataSourceLayer(getDataSource(), getColumnOfInterest(), getLegendTitle(), getDataSourceLayerOpacity(), displayedBreaks)
+        // let newDataSourceLayer = getDataSourceLayer(getDataSource(), getColumnOfInterest(), getLegendTitle(), getDataSourceLayerOpacity(), displayedBreaks)
         
-        newDataSourceLayer.on("layer-view-create", function(evt){
-          console.info('evt.layerView', evt.layerView)
-        })
+        // newDataSourceLayer.on("layer-view-create", function(evt){
+        //   console.info('evt.layerView', evt.layerView)
+        // })
 
-        map.layers.push(newDataSourceLayer)
+        // map.layers.push(newDataSourceLayer)
         
-        let newLegend = getLegend(newDataSourceLayer)
-        view.ui.add(newLegend, "bottom-right")
+        // let newLegend = getLegend(newDataSourceLayer)
+        // view.ui.add(newLegend, "bottom-right")
 
       }
 
@@ -501,9 +469,33 @@
 
       rotate()
       
-     
+      populateSelect('select-domain', () => {
+        document.getElementById("select-industry").innerHTML = ""
+        document.getElementById("select-occupation").innerHTML = ""
+        populateSelect('select-industry', () => {}, getIndustries)
+        populateSelect('select-occupation', () => {}, getOccupations)
+        showState()
+      }, getDomains)
+
+      populateSelect('select-industry', () => {
+        document.getElementById("select-occupation").innerHTML = ""
+        populateSelect('select-occupation', () => {}, getOccupations)
+        showState()
+      }, getIndustries)
+
+      populateSelect('select-occupation', () => {
+        showState()
+      }, getOccupations)
+
+      populateSelect('select-opacity', swapLayers, getOpacities)
+
+      populateSelect('select-basemap', swapBasemap, getBaseMaps)
+
+      // autocomplete(document.getElementById('select-name'), countries);
 
     })
+
+    
 
   </script>
 </html>

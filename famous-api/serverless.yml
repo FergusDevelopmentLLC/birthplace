@@ -44,6 +44,12 @@ functions:
       - http:
           method: get
           path: /getFamousLimit
+  getCountryNames:
+    handler: handler.getCountryNames
+    events:
+      - http:
+          method: get
+          path: /getCountryNames
 
 plugins:
   - serverless-offline

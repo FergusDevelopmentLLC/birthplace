@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="style/tarek.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
+  <link rel="stylesheet" href="style/globe.css" />
+
+  <script src="data/famous_names.js"></script>
+  <script src="data/famous_birth_years.js"></script>
+
+</head>
+
+<body>
+  <div class="autoComplete_wrapper">
+    <input id="famousNameInput" type="search" dir="ltr" spellcheck=false autocorrect="off" autocomplete="off" autocapitalize="off" placeholder="Search by name...">
+    <input id="birthYearsInput" type="search" dir="ltr" spellcheck=false autocorrect="off" autocomplete="off" autocapitalize="off" placeholder="Search by birth year...">
+  </div>
+  
+  <script>
+    const autoCompleteJS = new autoComplete({
+      selector: "#famousNameInput",
+      data: {
+        src: famous_names,
+        cache: true,
+      },
+      resultsList: {
+        element: (list, data) => {
+          if (!data.results.length) {
+            const message = document.createElement("div");
+            message.setAttribute("class", "no_result");
+            message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+            list.prepend(message);
+          }
+        },
+        noResults: true,
+      },
+      resultItem: {
+        highlight: true
+      },
+      events: {
+        input: {
+          selection: (event) => {
+            const selection = event.detail.selection.value;
+            autoCompleteJS.input.value = selection;
+          }
+        }
+      }
+    });
+
+    const autoCompleteJS2 = new autoComplete({
+      selector: "#birthYearsInput",
+      data: {
+        src: birth_years,
+        cache: true,
+      },
+      resultsList: {
+        element: (list, data) => {
+          if (!data.results.length) {
+            const message = document.createElement("div");
+            message.setAttribute("class", "no_result");
+            message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+            list.prepend(message);
+          }
+        },
+        noResults: true,
+      },
+      resultItem: {
+        highlight: true
+      },
+      events: {
+        input: {
+          selection: (event) => {
+            const selection = event.detail.selection.value;
+            autoCompleteJS2.input.value = selection;
+            console.log('something selected')
+          }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

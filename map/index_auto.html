@@ -1,0 +1,157 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Famous</title>
+    <style>
+      * {
+          font-family: Segoe UI;
+          font-size: 12px;
+        }
+
+        #famous_name, #country {
+          border: 1px solid silver;
+          outline: none;
+          margin: 0;
+          background: #fff;
+        }
+
+        #famous_name_result, #country_result {
+          border: 1px solid silver;
+          border-top: 0;
+          position: absolute;
+          overflow: auto;
+          max-height: 93px;
+          background: #fff;
+        }
+
+        #famous_name, #famous_name_result, #country, #country_result {
+          width: 200px;
+          box-sizing: border-box;
+        }
+
+        #famous_name, #famous_name_result p {
+          padding: 4px;
+          margin: 0;
+          color: #000;
+        }
+
+        #country, #country_result p {
+          padding: 4px;
+          margin: 0;
+          color: #000;
+        }
+
+        #famous_name_result p:nth-child(2n+1) {
+          background: #f6f6f6;
+        }
+
+        #country_result p:nth-child(2n+1) {
+          background: #f6f6f6;
+        }
+
+        #country_result p:hover {
+          background: #e5e5e5;
+        }
+    </style>
+    
+    
+  </head>
+  <body>
+    <p>Famous person's name</p>
+    <input id="famous_name" type="text" />
+    <div id="famous_name_result" style="display: none;"></div>
+    <br/>
+    <br/>
+    <br/>
+    <p>Country</p>
+    <input id="country" type="text" />
+    <div id="country_result" style="display: none;"></div>
+
+    <script>
+        
+      var famous_name_db = [
+        "Abraham Lincoln",
+        "Carrie Fisher",
+        "George Lucas",
+        "Sammy Davis Jr.",
+        "Bill Hicks",
+        "Bill Clinton"
+      ];
+
+      function popupClearAndHideFamousName() {
+        famous_name_result.innerHTML = "";
+        famous_name_result.style.display = "none";
+      }
+
+      function updPopupFamousName() {
+        if(!famous_name.value) {
+          popupClearAndHideFamousName();
+          return;
+        }
+        var a = new RegExp("^" + famous_name.value, "i");
+        for(var x = 0, b = document.createDocumentFragment(), c = false; x < famous_name_db.length; x++) {
+          if(a.test(famous_name_db[x])) {
+            c = true;
+            var d = document.createElement("p");
+            d.addEventListener('click', function() {
+              console.log('click')
+            })
+            d.innerText = famous_name_db[x];
+            b.appendChild(d);
+            //d.setAttribute("onclick", "famous_name.value=this.innerText;famous_name_result.innerHTML='';famous_name_result.style.display='none';");
+            
+          }
+        }
+        if(c == true) {
+          famous_name_result.innerHTML = "";
+          famous_name_result.style.display = "block";
+          famous_name_result.appendChild(b);
+          return;
+        }
+        popupClearAndHideFamousName();
+      }
+
+      famous_name.addEventListener("keyup", updPopupFamousName);
+      famous_name.addEventListener("change", updPopupFamousName);
+      famous_name.addEventListener("focus", updPopupFamousName);
+
+      var country_db = ["Afghanistan","Akrotiri","Åland","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla","Antarctica","Antigua and Barb.","Argentina","Armenia","Aruba","Ashmore and Cartier Is.","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bajo Nuevo Bank (Petrel Is.)","Bangladesh","Barbados","Baykonur","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bir Tawil","Bolivia","Bosnia and Herz.","Botswana","Brazil","Brazilian Island","Br. Indian Ocean Ter.","British Virgin Is.","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Cayman Is.","Central African Rep.","Chad","Chile","China","Clipperton I.","Colombia","Comoros","Cook Is.","Coral Sea Is.","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Curaçao","Cyprus","Cyprus U.N. Buffer Zone","Czechia","Democratic Republic of the Congo","Dem. Rep. Korea","Denmark","Dhekelia","Djibouti","Dominica","Dominican Rep.","Ecuador","Egypt","El Salvador","Eq. Guinea","Eritrea","Estonia","eSwatini","Ethiopia","Faeroe Islands","Falkland Is.","Fiji","Finland","France","Fr. Polynesia","Fr. S. and Antarctic Lands","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guantanamo Bay USNB","Guatemala","Guernsey","Guinea","Guinea-Bissau","Guyana","Haiti","Heard I. and McDonald Is.","Honduras","Hong Kong","Hungary","Iceland","India","Indian Ocean Ter.","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macao","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Is.","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauru","N. Cyprus","Nepal","Netherlands","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","N. Mariana Is.","Norfolk Island","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Pitcairn Is.","Poland","Portugal","Puerto Rico","Qatar","Republic of Korea","Republic of the Congo","Romania","Russia","Rwanda","Saint Helena","Saint Kitts and Nevis","Saint Lucia","Saint-Martin","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Scarborough Reef","Senegal","Serbia","Serranilla Bank","Seychelles","S. Geo. and the Is.","Siachen Glacier","Sierra Leone","Singapore","Sint Maarten","Slovakia","Slovenia","Solomon Is.","Somalia","Somaliland","South Africa","Southern Patagonian Ice Field","Spain","Spratly Is.","Sri Lanka","S. Sudan","St-Barthélemy","St. Pierre and Miquelon","St. Vin. and Gren.","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Is.","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","U.S. Minor Outlying Is.","U.S. Virgin Is.","Uzbekistan","Vanuatu","Vatican","Venezuela","Vietnam","Wallis and Futuna Islands","W. Sahara","Yemen","Zambia","Zimbabwe"]
+
+      function popupClearAndHideCountry() {
+        country_result.innerHTML = "";
+        country_result.style.display = "none";
+      }
+
+      function updPopupCountry() {
+        if(!country.value) {
+          popupClearAndHideCountry();
+          return;
+        }
+        var a = new RegExp("^" + country.value, "i");
+        for(var x = 0, b = document.createDocumentFragment(), c = false; x < country_db.length; x++) {
+          if(a.test(country_db[x])) {
+            c = true;
+            var d = document.createElement("p");
+            d.innerText = country_db[x];
+            d.setAttribute("onclick", "country.value=this.innerText;country_result.innerHTML='';country_result.style.display='none';");
+            b.appendChild(d);
+          }
+        }
+        if(c == true) {
+          country_result.innerHTML = "";
+          country_result.style.display = "block";
+          country_result.appendChild(b);
+          return;
+        }
+        popupClearAndHideCountry();
+      }
+
+      country.addEventListener("keyup", updPopupCountry);
+      country.addEventListener("change", updPopupCountry);
+      country.addEventListener("focus", updPopupCountry);
+      
+    </script>
+  </body>
+
+</html>

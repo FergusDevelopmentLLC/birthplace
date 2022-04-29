@@ -34,3 +34,5 @@ cp /home/ec2-user/programming/birthplace/python/images/* /home/ec2-user/programm
 6303
 
 autocrop -i /home/ec2-user/programming/birthplace/display/images/all -o /home/ec2-user/programming/birthplace/display/images/crop -r /home/ec2-user/programming/birthplace/display/images/reject -w 220 -H 220
+
+https://github.com/devbridge/jQuery-Autocomplete

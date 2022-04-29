@@ -356,5 +356,63 @@ module.exports.getOccupations = (event, context, callback) => {
   catch {
     callback(null, 'domain and industry querystring values required.')
   }
+}
 
+module.exports.getCountryNames = (event, context, callback) => {
+  
+  try {
+
+    let sql = `
+    SELECT to_json(r)
+    FROM (
+      select distinct birth_year from famous where birth_year > 0 order by 1
+    ) r
+    `
+    
+    const client = new Client(dbConfig)
+    
+    client.connect()
+
+    client
+      .query(sql, null)
+      .then((res) => {
+        
+        let arr = res.rows.map(row => row['to_json']['birth_year'])
+
+        console.log(arr)
+
+        let resp_body
+        
+        //resp_body = JSON.stringify(res.rows.map(row => row['to_json']))
+
+        resp_body = JSON.stringify(arr)
+
+        const response = {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": '*',
+            "Access-Control-Allow-Methods": 'GET'
+          },
+          body: resp_body
+        }
+
+        callback(null, response)
+
+        client.end()
+      })
+      .catch((error) => {
+
+        const errorResponse = {
+          statusCode: error.statusCode || 500,
+          body: `${error}`,
+        }
+
+        callback(null, errorResponse)
+
+        client.end()
+      })
+    }
+  catch {
+    callback(null, 'Error!!!')
+  }
 }

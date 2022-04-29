@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Famous</title>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.2.24/jquery.autocomplete.min.js"></script>
+  <script src="data/famous_names.js"></script>
+  <script src="data/famous_birth_years.js"></script>
+  <style>
+    body {
+      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      font-size: .9rem;
+    }
+
+    .text-field {
+      border: 1px solid #EEEEEE;
+      height: 1rem;
+      margin: 0;
+      padding: .2rem;
+      width: 20rem;
+    }
+    
+    .autocomplete-suggestions {
+      background-color: #f1f1f1;
+      padding-bottom:.5rem;
+    }
+
+    .autocomplete-suggestion {
+      overflow: hidden;
+      padding: 2px 5px;
+      white-space: nowrap;
+    }
+    
+    .autocomplete-suggestions strong {
+      color: #000;
+    }
+    
+    .autocomplete-selected{
+      background:#dbdbdb;
+    }
+    
+  </style>
+</head>
+<body>
+  <input type="text" id="famous-names-query" class="text-field valid" autocomplete="off" placeholder="Search by name">
+  <br/>
+  <br/>
+  <input type="text" id="famous-birthyears-query" class="text-field valid" autocomplete="off" placeholder="Search by birth year">
+</body>
+
+<script>
+  
+  const famous_names_01 = $('#famous-names-query').autocomplete({
+    width: 200,
+    delimiter: ',',
+    minChars: 2,
+    lookupLimit: 30,
+    maxHeight: 1000,
+    lookup: famous_names
+  })
+
+  const birth_years_01 = $('#famous-birthyears-query').autocomplete({
+    width: 200,
+    delimiter: ',',
+    minChars: 1,
+    lookupLimit: 20,
+    maxHeight: 500,
+    lookup: birth_years
+  })
+
+</script>
+</html>
