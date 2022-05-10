@@ -2,11 +2,10 @@ import boto3
 import private
 from os import walk
 
-def get_image_filenames():
+def get_files_in_local(path):
+    
     f = []
-
-    mypath = '/home/ec2-user/programming/birthplace/display/images/'
-    for (dirpath, dirnames, filenames) in walk(mypath):
+    for (dirpath, dirnames, filenames) in walk(path):
         f.extend(filenames)
         break
 
@@ -15,10 +14,12 @@ def get_image_filenames():
 session = boto3.Session(aws_access_key_id = private.aws_access_key_id, aws_secret_access_key = private.aws_secret_access_key)
 s3 = session.resource('s3')
 
-images = get_image_filenames()
+path = '/home/ec2-user/programming/birthplace/display/images/'
+
+images = get_files_in_local(path)
 
 for image in images:
-    upload_img = """/home/ec2-user/programming/birthplace/display/images/{}""".format(image)
+    upload_img = """{}{}""".format(path, image)
     s3.meta.client.upload_file(Filename=upload_img, Bucket='images-famous', Key=image)
     print("""image uploaded: {}""".format(image))
 
