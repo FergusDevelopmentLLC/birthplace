@@ -34,13 +34,14 @@ conn = psycopg2.connect(conn_string)
 sleep_secs = 2
 
 sql = """
-select 
-    id,
-    name
-from famous_01
-where image is NULL
-order by id
---limit 100
+SELECT 
+	id, 
+	name
+FROM famous_01 
+where image <> 'Unknown'
+and id > 4262
+order by 1
+--limit 2
 """
 cur = conn.cursor()
 cur.execute(sql)
@@ -58,7 +59,8 @@ for row in cur:
     print('name', name)
 
     src = get_image(name)
-    
+    print('src', src)
+
     if(src == None):
         src = 'Unknown'
 
@@ -81,13 +83,12 @@ for row in cur:
 
         urllib.request.urlretrieve(src, 'images/' + local_img_name)
     
-    
-    update_sql = """update famous_01 set image='{}' where id={};""".format(src, id)
-    print(update_sql)
+        update_sql = """update famous_01 set last_updated=CURRENT_TIMESTAMP where id={};""".format(id)
+        print(update_sql)
 
-    update_cur = conn.cursor()
-    update_cur.execute(update_sql)
-    conn.commit()
+        update_cur = conn.cursor()
+        update_cur.execute(update_sql)
+        conn.commit()
 
     print("""sleeping {} secs...""".format(sleep_secs))
     time.sleep(sleep_secs)

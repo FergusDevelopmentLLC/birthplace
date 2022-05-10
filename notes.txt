@@ -33,6 +33,34 @@ cp /home/ec2-user/programming/birthplace/python/images/* /home/ec2-user/programm
 [ec2-user@ip-172-31-41-150 images]$ ls | wc -l
 6303
 
+https://github.com/leblancfg/autocrop
+
 autocrop -i /home/ec2-user/programming/birthplace/display/images/all -o /home/ec2-user/programming/birthplace/display/images/crop -r /home/ec2-user/programming/birthplace/display/images/reject -w 220 -H 220
 
+autocrop -i /home/ec2-user/programming/birthplace/python/images -o /home/ec2-user/programming/birthplace/display/images -r /home/ec2-user/programming/birthplace/display/reject -w 220 -H 220
+
+
 https://github.com/devbridge/jQuery-Autocomplete
+
+python libs installed on ec2...
+
+
+
+157
+2165
+2572
+3372
+3791
+4094
+5888
+5959
+5987
+6483
+6548
+7121
+7269
+7466
+8364
+9857
+10115
+10164
