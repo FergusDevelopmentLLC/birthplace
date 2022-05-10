@@ -44,23 +44,3 @@ https://github.com/devbridge/jQuery-Autocomplete
 
 python libs installed on ec2...
 
-
-
-157
-2165
-2572
-3372
-3791
-4094
-5888
-5959
-5987
-6483
-6548
-7121
-7269
-7466
-8364
-9857
-10115
-10164
