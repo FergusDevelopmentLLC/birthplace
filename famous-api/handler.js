@@ -89,7 +89,7 @@ module.exports.getFamousLimit = (event, context, callback) => {
         birth_year,
         birth_place,
         country_code
-      from famous_06
+      from famous_01
       where image <> 'Unknown'
       order by id
     ) r

@@ -5,19 +5,9 @@
 		<title>Famous</title>
         <link rel="stylesheet" href="style/main.css" />
 	</head>
-    <!-- <script src="data/famous_01.js"></script> -->
-    <!-- <script src="data/famous_02.js"></script> -->
-    <!-- <script src="data/famous_03.js"></script> -->
-    <!-- <script src="data/famous_04.js"></script> -->
-    <!-- <script src="data/famous_05.js"></script> -->
-    <!-- <script src="data/famous_06.js"></script> -->
-    <!-- <script src="data/famous_07.js"></script> -->
-    <!-- <script src="data/famous_08.js"></script> -->
-    <!-- <script src="data/famous_09.js"></script> -->
-    <!-- <script src="data/famous_10.js"></script> -->
-    <!-- <script src="data/famous_11.js"></script> -->
-    <script src="data/famous_12.js"></script>
     
+    <script src="data/famous_01.js"></script>
+
 	<body>
         <div class=btn-container><button id="btn-showbad">Show bad!</button></div>
         <form id=form-famous>
@@ -29,7 +19,7 @@
         
         const getImageFor = (famous) => {
             if(famous['image'] !== 'Unknown') {
-                return `images/${famous['image']}`
+                return `https://images-famous.s3.amazonaws.com/${famous['image']}`
             }
             else {
                 return `https://www.poynter.org/wp-content/uploads/2021/09/shutterstock_1563012205.png`
@@ -40,9 +30,9 @@
         let index = 0
         for(f of famous) {
             
-            if(index > 5000) break
+            if(index > 10) break
 
-            if(index > 4000) {
+            if(index > 0) {
                 if(f['image'] !== 'Unknown') {
                     content += `
                     <div class="famous-div">
